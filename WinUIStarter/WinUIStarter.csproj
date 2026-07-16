@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+
+    <!-- .NET 10. The Visual Studio WinUI templates still generate net8.0-windows; there is no reason
+         to start a new app there. 19041 is the standard WinUI target platform. -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+
+    <RootNamespace>WinUIStarter</RootNamespace>
+    <AssemblyName>WinUIStarter</AssemblyName>
+    <UseWinUI>true</UseWinUI>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- UNPACKAGED. This single line is the difference between an app you can ship as a plain folder
+         and one that only runs under an MSIX identity. Without it, double-clicking the built .exe
+         dies with COMException 0x80040154 REGDB_E_CLASSNOTREG, because the Windows App Runtime's
+         WinRT classes are only registered for a process that has package identity. It also switches
+         the project to the Windows App SDK bootstrapper, which locates the runtime at startup. -->
+    <WindowsPackageType>None</WindowsPackageType>
+
+    <!-- x86 is intentionally absent: it is dead weight for a new Windows desktop app, and .NET 8+
+         dropped the old version-specific RIDs (win10-x64), so use the portable ones. Old win10-*
+         RIDs also silently block retargeting and fail with NETSDK1083. -->
+    <Platforms>x64;ARM64</Platforms>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <!-- NOTE: PublishTrimmed is deliberately NOT set. The stock template turns it ON for every
+         non-Debug build, which is unsafe for WinUI: XAML type resolution is reflection-driven and
+         Microsoft.Windows.SDK.NET / WinRT.Runtime emit trim warnings. A trimmed Release build can
+         fail at run time while Debug worked perfectly. Leave trimming off. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The Windows App SDK COMPONENT packages, NOT the Microsoft.WindowsAppSDK umbrella.
+         The umbrella metapackage transitively drags the whole Windows AI/ML stack into your output:
+         onnxruntime.dll (~21MB), DirectML.dll (~18MB) and the Microsoft.Windows.AI.* projections:
+         about 41MB that a typical desktop app never calls.
+           .WinUI    = the XAML framework
+           .Runtime  = the framework dependency + the unpackaged bootstrapper
+         Keep both. Their versions can legitimately differ. -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="2.2.1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="2.2.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,30 @@
+<Window
+    x:Class="WinUIStarter.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="WinUI Starter">
+
+    <!-- A WinUI Window is NOT a FrameworkElement: it has no Width, Height, Loaded or
+         DataContext. Size it through AppWindow (see MainWindow.xaml.cs) and hang your
+         Loaded logic off the root element or the individual control you care about. -->
+    <Grid x:Name="RootGrid" RowDefinitions="*,Auto" Padding="24" RowSpacing="12">
+
+        <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
+            <TextBlock x:Name="Headline"
+                       Text="WinUI Starter"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       HorizontalAlignment="Center" />
+            <TextBlock x:Name="Status"
+                       Text="Unpackaged. .NET 10. No MSIX, no 40MB of AI runtime."
+                       Style="{StaticResource BodyTextBlockStyle}"
+                       HorizontalAlignment="Center"
+                       Opacity="0.7" />
+        </StackPanel>
+
+        <Button Grid.Row="1"
+                x:Name="ClickMe"
+                Content="Click me"
+                HorizontalAlignment="Center"
+                Click="ClickMe_Click" />
+    </Grid>
+</Window>
