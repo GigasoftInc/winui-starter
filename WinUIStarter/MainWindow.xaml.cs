@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
@@ -25,7 +26,15 @@ public sealed partial class MainWindow : Window
 
     private void RootGrid_Loaded(object sender, RoutedEventArgs e)
     {
-        Status.Text = "Loaded. The visual tree is live -- initialize controls from here.";
+        // Worth knowing, and not what most people assume: an AnyCPU .NET build still produces a
+        // native launcher .exe whose architecture is fixed at BUILD time (it matches the machine
+        // you built on). So an AnyCPU app built on x64 runs under x64 emulation on an ARM64 box --
+        // it works, it is just not native. Only a Platform=ARM64 / -r win-arm64 build is.
+        // If Process and OS disagree below, you are being emulated.
+        var proc = RuntimeInformation.ProcessArchitecture;
+        var os = RuntimeInformation.OSArchitecture;
+        var emulated = proc != os ? "  (EMULATED)" : "  (native)";
+        Status.Text = $"Loaded. Process: {proc}   OS: {os}{emulated}";
     }
 
     private void ClickMe_Click(object sender, RoutedEventArgs e)

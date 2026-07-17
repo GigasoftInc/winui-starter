@@ -20,9 +20,13 @@
          the project to the Windows App SDK bootstrapper, which locates the runtime at startup. -->
     <WindowsPackageType>None</WindowsPackageType>
 
-    <!-- x86 is intentionally absent: it is dead weight for a new Windows desktop app, and .NET 8+
-         dropped the old version-specific RIDs (win10-x64), so use the portable ones. Old win10-*
-         RIDs also silently block retargeting and fail with NETSDK1083. -->
+    <!-- x64 is the default (what you debug on); ARM64 gives you native ARM64. AnyCPU is intentionally
+         absent: a .NET (Core) AnyCPU build still produces a native launcher whose architecture is fixed
+         at BUILD time (x64 on an x64 machine), so it does NOT run native on ARM64; it runs x64-emulated.
+         Build the ARM64 configuration for native ARM64. (This is standard .NET 5+ PlatformTarget behavior,
+         not a WinUI quirk.) x86 is also absent as dead weight for a new desktop app. .NET 8+ dropped the
+         version-specific RIDs (win10-x64) for the portable ones; leaving legacy win10-* RIDs in place
+         silently blocks retargeting and fails with NETSDK1083. -->
     <Platforms>x64;ARM64</Platforms>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
